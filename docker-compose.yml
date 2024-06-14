@@ -1,0 +1,37 @@
+services:
+  db:
+    container_name: wordpress-mysql
+    image: mariadb:10.11.2
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    networks:
+      - private_network
+
+  app:
+    container_name: wordpress
+    build: docker/php
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "80:80"
+    networks:
+      - private_network
+
+networks:
+  private_network:
+    driver: bridge
+
+volumes:
+  db_data:
